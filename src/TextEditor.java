@@ -7,6 +7,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser.ExtensionFilter;
+
 import java.util.*;
 import java.io.*;
 
@@ -45,14 +47,12 @@ public class TextEditor extends Application {
         primaryStage.setScene(scene2);
         primaryStage.show();
 
-
         // add text to stack
         textArea.textProperty().addListener((observable, oldValue, newValue) -> {
             stack.push(oldValue);
             stack2.push(newValue);
             stack2.clear();
         });
-
 
         // undo
 
@@ -61,8 +61,25 @@ public class TextEditor extends Application {
             stack.clear();
             stack2.clear();
         });
+
+        // open handler
         open.setOnAction(e -> {
-            textArea.setText("Open");
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Text Files", "*.txt"),
+                    new ExtensionFilter("All Files", "*.*"));
+            fileChooser.setTitle("Open Resource File");
+            File file = fileChooser.showOpenDialog(primaryStage);
+            if (file != null) {
+                try {
+                    Scanner in = new Scanner(file);
+                    while (in.hasNext()) {
+                        textArea.appendText(in.nextLine() + "\n");
+                    }
+                    in.close();
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
         });
         save.setOnAction(e -> {
 
@@ -82,10 +99,7 @@ public class TextEditor extends Application {
         });
     }
 
-
-
     public static void main(String[] args) {
-    launch(args);
+        launch(args);
     }
 }
-
