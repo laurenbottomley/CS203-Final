@@ -40,7 +40,9 @@ public class TextEditor extends Application {
         Button redo = new Button("_Redo");
 
         CheckMenuItem wordWrap = new CheckMenuItem("Word Wrap");
-        MenuButton view = new MenuButton("View", null, wordWrap);
+        MenuItem zoomIn = new MenuItem("Zoom In");
+        MenuItem zoomOut = new MenuItem("Zoom Out");
+        MenuButton view = new MenuButton("View", null, wordWrap, new SeparatorMenuItem(), zoomIn, zoomOut);
 
         ToolBar toolBar = new ToolBar(fileMenu, undo, redo, view);
 
@@ -56,7 +58,7 @@ public class TextEditor extends Application {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 primaryStage.close();
-            }else{
+            } else {
                 e.consume();
             }
         });
@@ -166,7 +168,6 @@ public class TextEditor extends Application {
 
         }));
 
-
         stackTimeline.setCycleCount(Timeline.INDEFINITE);
 
         textArea.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -196,6 +197,15 @@ public class TextEditor extends Application {
                 textArea.setText(undoStack.peek());
             }
             stackTimeline.pause();
+        });
+
+        zoomIn.setOnAction(e -> {
+            textArea.setStyle("-fx-font-size: " + (textArea.getFont().getSize() + 2) + "px;");
+
+        });
+
+        zoomOut.setOnAction(e -> {
+            textArea.setStyle("-fx-font-size: " + (textArea.getFont().getSize() - 2) + "px;");
         });
     }
 
