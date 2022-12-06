@@ -52,15 +52,6 @@ public class TextEditor extends Application {
         primaryStage.setScene(scene2);
         primaryStage.show();
 
-        // add text to stack
-        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            undoStack.push(oldValue);
-            redoStack.push(newValue);
-            redoStack.clear();
-        });
-
-        // undo
-
         newb.setOnAction(e -> {
             textArea.clear();
             undoStack.clear();
@@ -166,7 +157,7 @@ public class TextEditor extends Application {
         redo.setOnAction(e -> {
             System.out.println(redoStack);
             if (!redoStack.isEmpty() && redoStack.peek().equals(textArea.getText())) {
-                redoStack.pop();
+                undoStack.push(redoStack.pop());
             }
             if (!redoStack.isEmpty()) {
                 undoStack.push(redoStack.pop());
