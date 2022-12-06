@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
@@ -22,8 +23,8 @@ public class TextEditor extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        MenuItem newb = new MenuItem("New");
-        MenuItem open = new MenuItem("Open");
+        MenuItem newb = new MenuItem("_New");
+        MenuItem open = new MenuItem("_Open");
         MenuItem save = new MenuItem("_Save");
         MenuItem saveAs = new MenuItem("Save _As");
         MenuItem exit = new MenuItem("Exit");
@@ -33,8 +34,10 @@ public class TextEditor extends Application {
         Button undo = new Button("_Undo");
         Button redo = new Button("_Redo");
 
-        ToolBar toolBar = new ToolBar(fileMenu, undo, redo);
+        CheckMenuItem wordWrap = new CheckMenuItem("Word Wrap");
+        MenuButton view = new MenuButton("View", null, wordWrap);
 
+        ToolBar toolBar = new ToolBar(fileMenu, undo, redo, view);
 
         Stack<String> undoStack = new Stack<>();
         Stack<String> redoStack = new Stack<>();
@@ -46,6 +49,7 @@ public class TextEditor extends Application {
         primaryStage.setAlwaysOnTop(true);
         primaryStage.setFullScreenExitHint("Press ESC to exit full screen mode");
         TextArea textArea = new TextArea();
+        textArea.wrapTextProperty().bindBidirectional(wordWrap.selectedProperty());
         BorderPane borderPane = new BorderPane(textArea);
         borderPane.setTop(toolBar);
         Scene scene2 = new Scene(borderPane);
