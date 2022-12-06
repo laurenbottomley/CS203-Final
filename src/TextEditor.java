@@ -1,6 +1,7 @@
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -43,10 +44,9 @@ public class TextEditor extends Application {
         Stack<String> redoStack = new Stack<>();
 
         primaryStage.setTitle("TextEditor"); // Set the stage title
-        primaryStage.setResizable(true);
-        primaryStage.setFullScreen(true);
-        primaryStage.setMaximized(true);
-        primaryStage.setAlwaysOnTop(true);
+        // primaryStage.setFullScreen(true);
+        // primaryStage.setMaximized(true);
+        // primaryStage.setAlwaysOnTop(true);
         primaryStage.setFullScreenExitHint("Press ESC to exit full screen mode");
         TextArea textArea = new TextArea();
         textArea.wrapTextProperty().bindBidirectional(wordWrap.selectedProperty());
@@ -57,9 +57,11 @@ public class TextEditor extends Application {
         primaryStage.show();
 
         newb.setOnAction(e -> {
-            textArea.clear();
-            undoStack.clear();
-            redoStack.clear();
+            Platform.runLater(() -> {
+                TextEditor t = new TextEditor();
+                Stage stage = new Stage();
+                t.start(stage);
+            });
         });
 
         SimpleStringProperty path = new SimpleStringProperty();
