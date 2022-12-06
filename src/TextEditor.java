@@ -51,6 +51,15 @@ public class TextEditor extends Application {
         // primaryStage.setFullScreen(true);
         // primaryStage.setMaximized(true);
         // primaryStage.setAlwaysOnTop(true);
+        primaryStage.setOnCloseRequest(e -> {
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Exit?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                primaryStage.close();
+            }else{
+                e.consume();
+            }
+        });
         primaryStage.setFullScreenExitHint("Press ESC to exit full screen mode");
         TextArea textArea = new TextArea();
         textArea.wrapTextProperty().bindBidirectional(wordWrap.selectedProperty());
@@ -90,7 +99,6 @@ public class TextEditor extends Application {
             }
         });
 
-        // save halder
         save.setOnAction(e -> {
             File file;
             if (path.getValue() == null) {
@@ -114,7 +122,6 @@ public class TextEditor extends Application {
             }
         });
 
-        // saveas handler
         saveAs.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Text Files", "*.txt"),
@@ -133,8 +140,21 @@ public class TextEditor extends Application {
                 }
             }
         });
+
         exit.setOnAction(e -> {
-            primaryStage.close();
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Exit?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                primaryStage.close();
+
+            }
+        });
+        exitAll.setOnAction(e -> {
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Exit ALL??!!?!?!?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                System.exit(0);
+            }
         });
         Timeline stackTimeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> {
             if (undoStack.isEmpty()) {
@@ -146,13 +166,6 @@ public class TextEditor extends Application {
 
         }));
 
-        exitAll.setOnAction(e -> {
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Exit ALL??!!?!?!?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                System.exit(0);
-            }
-        });
 
         stackTimeline.setCycleCount(Timeline.INDEFINITE);
 
