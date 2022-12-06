@@ -4,13 +4,16 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -29,8 +32,9 @@ public class TextEditor extends Application {
         MenuItem save = new MenuItem("_Save");
         MenuItem saveAs = new MenuItem("Save _As");
         MenuItem exit = new MenuItem("Exit");
+        MenuItem exitAll = new MenuItem("Exit All");
         MenuButton fileMenu = new MenuButton("File", null, newb, open, new SeparatorMenuItem(), save, saveAs,
-                new SeparatorMenuItem(), exit);
+                new SeparatorMenuItem(), exit, exitAll);
 
         Button undo = new Button("_Undo");
         Button redo = new Button("_Redo");
@@ -141,6 +145,15 @@ public class TextEditor extends Application {
             }
 
         }));
+
+        exitAll.setOnAction(e -> {
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Exit ALL??!!?!?!?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                System.exit(0);
+            }
+        });
+
         stackTimeline.setCycleCount(Timeline.INDEFINITE);
 
         textArea.textProperty().addListener((observable, oldValue, newValue) -> {
