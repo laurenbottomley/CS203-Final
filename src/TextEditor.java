@@ -1,3 +1,5 @@
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
@@ -5,10 +7,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.util.Duration;
 
 import java.util.*;
 import java.io.*;
@@ -16,17 +18,10 @@ import java.io.*;
 public class TextEditor extends Application {
     @Override
     public void start(Stage primaryStage) {
-        Stack stack = new Stack<>();
-        Stack stack2 = new Stack<>();
-        TextArea ta = new TextArea();
+        Stack<String> undoStack = new Stack<>();
+        Stack<String> redoStack = new Stack<>();
 
-        BorderPane pane = new BorderPane();
-        pane.setCenter(ta);
-
-        Scene scene = new Scene(pane, 450, 200);
         primaryStage.setTitle("TextEditor"); // Set the stage title
-        primaryStage.setScene(scene); // Place the scene in the stage
-        primaryStage.show(); // Display the stage
         primaryStage.setResizable(true);
         primaryStage.setFullScreen(true);
         primaryStage.setMaximized(true);
@@ -50,19 +45,19 @@ public class TextEditor extends Application {
 
         // add text to stack
         textArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            stack.push(oldValue);
-            stack2.push(newValue);
-            stack2.clear();
+            undoStack.push(oldValue);
+            redoStack.push(newValue);
+            redoStack.clear();
         });
 
         // undo
 
         newb.setOnAction(e -> {
             textArea.clear();
-            stack.clear();
-            stack2.clear();
+            undoStack.clear();
+            redoStack.clear();
         });
-        
+
         SimpleStringProperty path = new SimpleStringProperty();
         // open handler
         open.setOnAction(e -> {
@@ -85,7 +80,7 @@ public class TextEditor extends Application {
             }
         });
 
-        //save halder
+        // save halder
         save.setOnAction(e -> {
             File file;
             if (path.getValue() == null) {
@@ -109,7 +104,7 @@ public class TextEditor extends Application {
             }
         });
 
-//saveas handler
+        // saveas handler
         saveAs.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Text Files", "*.txt"),
@@ -131,15 +126,44 @@ public class TextEditor extends Application {
         exit.setOnAction(e -> {
             primaryStage.close();
         });
-        undo.setOnAction(e -> {
-            if (!stack.isEmpty()) {
-                textArea.setText((String) stack.pop());
+        Timeline stackTimeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> {
+            if (undoStack.isEmpty()) {
+                undoStack.push("");
             }
+            if (!textArea.getText().equals(undoStack.peek())) {
+                undoStack.push(textArea.getText());
+            }
+
+        }));
+        stackTimeline.setCycleCount(Timeline.INDEFINITE);
+
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            stackTimeline.play();
         });
-        redo.setOnAction(e -> {
-            if (!stack2.isEmpty()) {
-                textArea.setText((String) stack2.pop());
+
+        undo.setOnAction(e -> {
+            System.out.println(undoStack);
+            if (!undoStack.isEmpty() && undoStack.peek().equals(textArea.getText())) {
+                redoStack.push(undoStack.pop());
             }
+            if (!undoStack.isEmpty()) {
+                redoStack.push(undoStack.peek());
+                textArea.setText(undoStack.pop());
+            }
+            stackTimeline.pause();
+
+        });
+
+        redo.setOnAction(e -> {
+            System.out.println(redoStack);
+            if (!redoStack.isEmpty() && redoStack.peek().equals(textArea.getText())) {
+                redoStack.pop();
+            }
+            if (!redoStack.isEmpty()) {
+                undoStack.push(redoStack.pop());
+                textArea.setText(undoStack.peek());
+            }
+            stackTimeline.pause();
         });
     }
 
