@@ -4,9 +4,12 @@ import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -18,6 +21,21 @@ import java.io.*;
 public class TextEditor extends Application {
     @Override
     public void start(Stage primaryStage) {
+
+        MenuItem newb = new MenuItem("New");
+        MenuItem open = new MenuItem("Open");
+        MenuItem save = new MenuItem("_Save");
+        MenuItem saveAs = new MenuItem("Save _As");
+        MenuItem exit = new MenuItem("Exit");
+        MenuButton fileMenu = new MenuButton("File", null, newb, open, new SeparatorMenuItem(), save, saveAs,
+                new SeparatorMenuItem(), exit);
+
+        Button undo = new Button("_Undo");
+        Button redo = new Button("_Redo");
+
+        ToolBar toolBar = new ToolBar(fileMenu, undo, redo);
+
+
         Stack<String> undoStack = new Stack<>();
         Stack<String> redoStack = new Stack<>();
 
@@ -27,18 +45,9 @@ public class TextEditor extends Application {
         primaryStage.setMaximized(true);
         primaryStage.setAlwaysOnTop(true);
         primaryStage.setFullScreenExitHint("Press ESC to exit full screen mode");
-        HBox hBox = new HBox();
-        Button newb = new Button("New");
-        Button open = new Button("Open");
-        Button save = new Button("Save");
-        Button saveAs = new Button("Save As");
-        Button exit = new Button("Exit");
-        Button undo = new Button("Undo");
-        Button redo = new Button("Redo");
-        hBox.getChildren().addAll(newb, open, save, saveAs, exit, undo, redo);
         TextArea textArea = new TextArea();
         BorderPane borderPane = new BorderPane(textArea);
-        borderPane.setTop(hBox);
+        borderPane.setTop(toolBar);
         Scene scene2 = new Scene(borderPane);
         primaryStage.setScene(scene2);
         primaryStage.show();
