@@ -2,6 +2,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -22,6 +23,7 @@ import javafx.util.Duration;
 
 import java.util.*;
 import java.io.*;
+
 
 public class TextEditor extends Application {
     @Override
@@ -53,22 +55,13 @@ public class TextEditor extends Application {
         // primaryStage.setFullScreen(true);
         // primaryStage.setMaximized(true);
         // primaryStage.setAlwaysOnTop(true);
-        primaryStage.setOnCloseRequest(e -> {
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Exit?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                primaryStage.close();
-            } else {
-                e.consume();
-            }
-        });
         primaryStage.setFullScreenExitHint("Press ESC to exit full screen mode");
         TextArea textArea = new TextArea();
         textArea.wrapTextProperty().bindBidirectional(wordWrap.selectedProperty());
         BorderPane borderPane = new BorderPane(textArea);
         borderPane.setTop(toolBar);
-        Scene scene2 = new Scene(borderPane);
-        primaryStage.setScene(scene2);
+        Scene scene = new Scene(borderPane);
+        primaryStage.setScene(scene);
         primaryStage.show();
 
         newb.setOnAction(e -> {
@@ -80,7 +73,8 @@ public class TextEditor extends Application {
         });
 
         SimpleStringProperty path = new SimpleStringProperty();
-        // open handler
+        SimpleIntegerProperty textHash = new SimpleIntegerProperty();
+
         open.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Text Files", "*.txt"),
@@ -95,6 +89,7 @@ public class TextEditor extends Application {
                         textArea.appendText(in.nextLine() + "\n");
                     }
                     in.close();
+                    textHash.setValue(textArea.getText().hashCode());
                 } catch (FileNotFoundException ex) {
                     ex.printStackTrace();
                 }
@@ -118,6 +113,7 @@ public class TextEditor extends Application {
                     PrintWriter out = new PrintWriter(file);
                     out.print(textArea.getText());
                     out.close();
+                    textHash.setValue(textArea.getText().hashCode());
                 } catch (FileNotFoundException ex) {
                     ex.printStackTrace();
                 }
@@ -137,20 +133,50 @@ public class TextEditor extends Application {
                     PrintWriter out = new PrintWriter(file);
                     out.print(textArea.getText());
                     out.close();
+                    textHash.setValue(textArea.getText().hashCode());
                 } catch (FileNotFoundException ex) {
                     ex.printStackTrace();
                 }
             }
         });
 
-        exit.setOnAction(e -> {
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Exit?");
+        primaryStage.setOnCloseRequest(e -> {
+            if (path.getValue() == null && textArea.getText().equals("")) {
+                primaryStage.close();
+                return;
+            }
+            if(textHash.getValue()==textArea.getText().hashCode()){
+                primaryStage.close();
+                return;
+            }
+
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Exit without Saving?");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 primaryStage.close();
+            } else {
+                e.consume();
+            }
 
+        });
+
+        exit.setOnAction(e -> {
+
+            if (path.getValue() == null && textArea.getText().equals("")) {
+                primaryStage.close();
+                return;
+            }
+            if(textHash.getValue()==textArea.getText().hashCode()){
+                primaryStage.close();
+                return;
+            }
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Exit without Saving?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                primaryStage.close();
             }
         });
+
         exitAll.setOnAction(e -> {
             Alert alert = new Alert(AlertType.CONFIRMATION, "Exit ALL??!!?!?!?");
             Optional<ButtonType> result = alert.showAndWait();
@@ -158,6 +184,7 @@ public class TextEditor extends Application {
                 System.exit(0);
             }
         });
+
         Timeline stackTimeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> {
             if (undoStack.isEmpty()) {
                 undoStack.push("");
@@ -167,9 +194,7 @@ public class TextEditor extends Application {
             }
 
         }));
-
         stackTimeline.setCycleCount(Timeline.INDEFINITE);
-
         textArea.textProperty().addListener((observable, oldValue, newValue) -> {
             stackTimeline.play();
         });
