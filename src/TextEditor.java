@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -16,7 +17,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -44,7 +47,9 @@ public class TextEditor extends Application {
         CheckMenuItem wordWrap = new CheckMenuItem("Word Wrap");
         MenuItem zoomIn = new MenuItem("Zoom In");
         MenuItem zoomOut = new MenuItem("Zoom Out");
-        MenuButton view = new MenuButton("View", null, wordWrap, new SeparatorMenuItem(), zoomIn, zoomOut);
+        MenuItem keyword = new MenuItem("Disable Keywords");
+        MenuButton view = new MenuButton("View", null, wordWrap, new SeparatorMenuItem(), zoomIn, zoomOut,
+                new SeparatorMenuItem(), keyword);
 
         ToolBar toolBar = new ToolBar(fileMenu, undo, redo, view);
 
@@ -57,9 +62,12 @@ public class TextEditor extends Application {
         primaryStage.setFullScreenExitHint("Press ESC to exit full screen mode");
         TextArea textArea = new TextArea();
         textArea.wrapTextProperty().bindBidirectional(wordWrap.selectedProperty());
-        BorderPane borderPane = new BorderPane(textArea);
+
+        StackPane stackPane = new StackPane(textArea);
+        BorderPane borderPane = new BorderPane(stackPane);
         borderPane.setTop(toolBar);
         Scene scene = new Scene(borderPane);
+
         primaryStage.setTitle("Lemon TextEditor"); // Set the stage title
         primaryStage.getIcons().add(new Image("file:images/icon.png"));
         primaryStage.setScene(scene);
@@ -233,6 +241,41 @@ public class TextEditor extends Application {
         zoomOut.setOnAction(e -> {
             textArea.setStyle("-fx-font-size: " + (textArea.getFont().getSize() - 2) + "px;");
         });
+
+        ImageView iView = new ImageView(new Image("file:images/professor.jpg"));
+        iView.setPreserveRatio(true);
+        iView.fitWidthProperty().bind(scene.widthProperty());
+        iView.fitHeightProperty().bind(scene.heightProperty());
+        iView.setOpacity(.3);
+        iView.setMouseTransparent(true);
+
+        Timeline keywordTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
+            if (textArea.getText().contains("professor")) {
+                if (!stackPane.getChildren().contains(iView))
+                    stackPane.getChildren().add(iView);
+            } else {
+                if (stackPane.getChildren().contains(iView)) {
+                    stackPane.getChildren().remove(iView);
+                }
+            }
+        }));
+        keywordTimeline.setCycleCount(Timeline.INDEFINITE);
+        keywordTimeline.play();
+
+        keyword.setOnAction(e -> {
+            if (keyword.getText().equals("Disable Keywords")) {
+                keyword.setText("Enable Keywords");
+                keywordTimeline.stop();
+                if (stackPane.getChildren().contains(iView)) {
+                    stackPane.getChildren().remove(iView);
+                }
+            } else {
+                keyword.setText("Disable Keywords");
+                keywordTimeline.play();
+
+            }
+        });
+
     }
 
     public static void main(String[] args) {
