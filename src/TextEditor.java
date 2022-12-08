@@ -15,6 +15,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -23,7 +24,6 @@ import javafx.util.Duration;
 
 import java.util.*;
 import java.io.*;
-
 
 public class TextEditor extends Application {
     @Override
@@ -51,7 +51,6 @@ public class TextEditor extends Application {
         Stack<String> undoStack = new Stack<>();
         Stack<String> redoStack = new Stack<>();
 
-        primaryStage.setTitle("TextEditor"); // Set the stage title
         // primaryStage.setFullScreen(true);
         // primaryStage.setMaximized(true);
         // primaryStage.setAlwaysOnTop(true);
@@ -61,6 +60,8 @@ public class TextEditor extends Application {
         BorderPane borderPane = new BorderPane(textArea);
         borderPane.setTop(toolBar);
         Scene scene = new Scene(borderPane);
+        primaryStage.setTitle("Lemon TextEditor"); // Set the stage title
+        primaryStage.getIcons().add(new Image("file:images/icon.png"));
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -145,7 +146,7 @@ public class TextEditor extends Application {
                 primaryStage.close();
                 return;
             }
-            if(textHash.getValue()==textArea.getText().hashCode()){
+            if (textHash.getValue() == textArea.getText().hashCode()) {
                 primaryStage.close();
                 return;
             }
@@ -166,7 +167,7 @@ public class TextEditor extends Application {
                 primaryStage.close();
                 return;
             }
-            if(textHash.getValue()==textArea.getText().hashCode()){
+            if (textHash.getValue() == textArea.getText().hashCode()) {
                 primaryStage.close();
                 return;
             }
