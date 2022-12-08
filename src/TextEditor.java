@@ -249,6 +249,10 @@ public class TextEditor extends Application {
         iView.setOpacity(.3);
         iView.setMouseTransparent(true);
 
+        Bouncing balls = new Bouncing();
+        balls.setMouseTransparent(true);
+        balls.setOpacity(.3);
+
         Timeline keywordTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
             if (textArea.getText().contains("professor")) {
                 if (!stackPane.getChildren().contains(iView))
@@ -256,6 +260,17 @@ public class TextEditor extends Application {
             } else {
                 if (stackPane.getChildren().contains(iView)) {
                     stackPane.getChildren().remove(iView);
+                }
+            }
+            if (textArea.getText().contains("ball")) {
+                if (!stackPane.getChildren().contains(balls)) {
+                    stackPane.getChildren().add(balls);
+                    balls.start();
+                }
+            } else {
+                if (stackPane.getChildren().contains(balls)) {
+                    balls.stop();
+                    stackPane.getChildren().remove(balls);
                 }
             }
         }));
@@ -269,11 +284,16 @@ public class TextEditor extends Application {
                 if (stackPane.getChildren().contains(iView)) {
                     stackPane.getChildren().remove(iView);
                 }
+                if (stackPane.getChildren().contains(balls)) {
+                    balls.stop();
+                    stackPane.getChildren().remove(balls);
+                }
             } else {
                 keyword.setText("Disable Keywords");
                 keywordTimeline.play();
 
             }
+
         });
 
     }
