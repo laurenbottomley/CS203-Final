@@ -244,8 +244,8 @@ public class TextEditor extends Application {
 
         ImageView iView = new ImageView(new Image("file:images/professor.jpg"));
         iView.setPreserveRatio(true);
-        iView.fitWidthProperty().bind(scene.widthProperty());
-        iView.fitHeightProperty().bind(scene.heightProperty());
+        iView.fitWidthProperty().bind(stackPane.widthProperty());
+        iView.fitHeightProperty().bind(stackPane.heightProperty());
         iView.setOpacity(.3);
         iView.setMouseTransparent(true);
 
