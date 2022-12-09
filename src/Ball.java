@@ -48,7 +48,7 @@ public class Ball extends Circle {
                             ? ((Region) getParent()).getHeight() - getRadius()
                             : getCenterY());
             setCenterX(
-                    getCenterX() > getParent().getScene().getWidth() - getRadius()
+                    getCenterX() > ((Region) getParent()).getWidth() - getRadius()
                             ? getParent().getScene().getWidth() - getRadius()
                             : getCenterX());
 
