@@ -1,4 +1,4 @@
-# CS203-Final
+# Lemon Text Editor - Final
 Final Project - Lauren, Esmond, Montara
 
-A text editor made via JavaFx that features several functions including Undo/Redo powered by Stack data structures.
+A text editor with a fun GUI made with Java and JavaFx that features several functionalities including basic get functions from your OS and undo/redo functions using stack data structures.
